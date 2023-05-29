@@ -1,7 +1,7 @@
 vector <TFile*> makeFileVector (string &fileListPath);
 vector <string> buildObjectList (vector <string> &histNames, TDirectory *folder, int depth=1);
 void filterObjectList (vector <string> &objectList, string &pattern);
-vector <float> getRunIds(vector<TFile*> &files, string &pattern);
+vector <float> getRunIds(vector<TFile*> &files, string pattern);
 void plot(vector <TFile*> &files, vector<string> &histnames, vector<float> &xAxis, const char *xAxisTitle, bool isTimeGraph, TDirectoryFile *outDir);
 
 void plotTrends(string fileListPath="qa.list", const char *outFilePath="trends.root", string pattern=".*")
@@ -11,7 +11,7 @@ void plotTrends(string fileListPath="qa.list", const char *outFilePath="trends.r
   buildObjectList(histNames, files.at(0));
   vector <float> runIds;
   vector <float> runTimes;
-  runIds = getRunIds(files, ".*(\\d+)\\.qa\\.root");
+  runIds = getRunIds(files, ".*\\/(\\d+)\\.qa\\.root");
   //runTimes = getRunTimes(files);
   filterObjectList(histNames, pattern);
   auto outFile = new TFile(outFilePath, "recreate");
@@ -105,7 +105,7 @@ vector <TFile*> makeFileVector (string &fileListPath)
   return files;
 }
 
-vector <float> getRunIds(vector<TFile*> &files, string &pattern)
+vector <float> getRunIds(vector<TFile*> &files, string pattern)
 {
   vector <float> runIds;
   for (auto f:files)
@@ -115,7 +115,9 @@ vector <float> getRunIds(vector<TFile*> &files, string &pattern)
     regex_search(name, sm, regex(pattern));
     string id=sm[1];
     runIds.push_back(stoi(id));
+    cout << id << "\t";
   }
+  cout << endl;
   return runIds;
 }
 
