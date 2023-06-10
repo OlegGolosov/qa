@@ -1,7 +1,9 @@
 #include "qaUtils.h"
 #include "makeDF.h"
 
-void qa(string in="tree.root", const char* out="qa.root", string eventSelection="goodEvent") {
+//void qa(string in="tree13.root", const char* out="qa13.root", string eventSelection="goodEvent") {
+void qa(string in="tree30.root", const char* out="qa30.root", string eventSelection="goodEvent") {
+//void qa(string in="tree41.root", const char* out="qa41.root", string eventSelection="goodEvent") {
 //void qa(string in="tree_mc.root", const char* out="qa_mc.root", string eventSelection="goodMcEvent") {
   auto c=makeChain(in, "t"); 
   RDataFrame d(*c);
@@ -11,8 +13,8 @@ void qa(string in="tree.root", const char* out="qa.root", string eventSelection=
     dd=dd.Filter(eventSelection);
   cout << "Number of selected events: " << *(dd.Count()) << endl;
 
-  int nBinsP=500, nBinsEta=500, nBinsY=500, nBinsPhi=500, Mmax=500, nBinsVtxXY=500, nBinsVtxZ=1000, nBinsdEdx=400, nBinsM2=1000;
-  float ptMax=5, etaMax=7, yMin=-1, yMax=3, psdEmax=8000, vtxXYmax=2, vtxZmin=-700, vtxZmax=-500, dEdxMax=10, M2Min=-3, M2Max=7;
+  int nBinsP=500, nBinsEta=500, nBinsY=500, nBinsPhi=500, Mmax=500, nBinsVtxXY=500, nBinsVtxZ=1000, nBinsdEdx=400, nBinsM2=1000, nBinsDca=200;
+  float ptMax=5, etaMax=7, yMin=-1, yMax=3, psdEmax=8000, vtxXYmax=2, vtxZmin=-700, vtxZmax=-500, dEdxMax=10, M2Min=-3, M2Max=7, dcaMax=5;
   vector <pair <vector<string>, TH1DModel>> h1common = {
     {{"goodVtxXY", ""},             {"", "", 2, 0, 2}},
     {{"vtxPurity", ""},             {"", "", 110, 0, 1.1}},
@@ -80,12 +82,12 @@ void qa(string in="tree.root", const char* out="qa.root", string eventSelection=
     {{"trY", "pionneg"},          {"", "", nBinsY, yMin, yMax}},
     {{"trY", "pionpos"},          {"", "", nBinsY, yMin, yMax}},
     {{"trY", "proton"},           {"", "", nBinsY, yMin, yMax}},
-    {{"trDcaX", ""}, 	              {"", "", 100, -5, 5}},
-    {{"trDcaX", "trGood"},          {"", "", 100, -5, 5}},
-    {{"trDcaY", ""}, 	              {"", "", 100, -5, 5}},
-    {{"trDcaY", "trGood"},          {"", "", 100, -5, 5}},
-    {{"trDcaZ", ""}, 	              {"", "", 100, -5, 5}},
-    {{"trDcaZ", "trGood"},          {"", "", 100, -2, 2}},
+    {{"trDcaX", ""}, 	              {"", "", nBinsDca, -dcaMax, dcaMax}},
+    {{"trDcaX", "trGood"},          {"", "", nBinsDca, -dcaMax, dcaMax}},
+    {{"trDcaY", ""}, 	              {"", "", nBinsDca, -dcaMax, dcaMax}},
+    {{"trDcaY", "trGood"},          {"", "", nBinsDca, -dcaMax, dcaMax}},
+    {{"trDcaZ", ""}, 	              {"", "", nBinsDca, -0.5*dcaMax, 0.5*dcaMax}},
+    {{"trDcaZ", "trGood"},          {"", "", nBinsDca, -0.5*dcaMax, 0.5*dcaMax}},
     {{"trDcaCut", ""},              {"", "", 2, 0, 2}},
     {{"trGood", ""},                {"", "", 2, 0, 2}},
     {{"trGoodNclust", ""},          {"", "", 2, 0, 2}},
@@ -98,7 +100,7 @@ void qa(string in="tree.root", const char* out="qa.root", string eventSelection=
     {{"adcV1", ""},                 {"", "", 1000, 0, 1000}},
     {{"adcV1p", ""},                {"", "", 100, 0, 100}},
     {{"adcPSD", ""},                {"", "", 1400, 0, 1400}},
-    {{"timesS1_1", ""},             {"", "", int(6e4), -3e4, 3e4}},
+//    {{"timesS1_1", ""},             {"", "", int(6e4), -3e4, 3e4}},
     {{"goodS1S2", ""},              {"", "", 2, 0, 2}},
     {{"goodWfa", ""},               {"", "", 2, 0, 2}},
     {{"goodEventBeforeVtxCut", ""}, {"", "", 2, 0, 2}},
@@ -189,9 +191,9 @@ void qa(string in="tree.root", const char* out="qa.root", string eventSelection=
     {{"psd0E", "centrality", ""},           {"", "", int(psdEmax/10), 0, psdEmax, 20, 0, 100}},
     {{"psd1E", "centrality", ""},           {"", "", int(psdEmax/10), 0, psdEmax, 20, 0, 100}},
     {{"psd12E", "centrality", ""},          {"", "", int(psdEmax/10), 0, psdEmax, 20, 0, 100}},
-    {{"psdModId", "psdModE", ""},           {"", "", 45, 1, 45, int(psdEmax/20), 0, 0.5*psdEmax}},
-    {{"trDcaX", "trDcaY", ""},              {"", "", 100, -5, 5, 100, -5, 5}},
-    {{"trDcaX", "trDcaY", "trGood"},        {"", "", 100, -5, 5, 100, -5, 5}},
+    {{"psdModId", "psdModE", ""},           {"", "", 244, 1, 244, int(psdEmax/20), 0, 0.5*psdEmax}},
+    {{"trDcaX", "trDcaY", ""},              {"", "", nBinsDca, -dcaMax, dcaMax, nBinsDca, -dcaMax, dcaMax}},
+    {{"trDcaX", "trDcaY", "trGood"},        {"", "", nBinsDca, -dcaMax, dcaMax, nBinsDca, -dcaMax, dcaMax}},
     {{"trNclust", "trNclustPot", ""},       {"", "", 250, 0, 250, 250, 0, 250}},
     {{"trNclust", "trNclustPot", "trGood"}, {"", "", 250, 0, 250, 250, 0, 250}},
     {{"trEta", "trPt", ""},                 {"", "", nBinsEta, 0, etaMax, nBinsP, 0, ptMax}},
@@ -222,12 +224,6 @@ void qa(string in="tree.root", const char* out="qa.root", string eventSelection=
     {{"trY", "trPt", "pionneg_effTr"},            {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
     {{"trY", "trPt", "pionpos_effTr"},            {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
     {{"trY", "trPt", "proton_effTr"},             {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
-    {{"trY", "trPt", "pionneg_effPid"},            {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
-    {{"trY", "trPt", "pionpos_effPid"},            {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
-    {{"trY", "trPt", "proton_effPid"},             {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
-    {{"trY", "trPt", "pionneg_effTrPid"},            {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
-    {{"trY", "trPt", "pionpos_effTrPid"},            {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
-    {{"trY", "trPt", "proton_effTrPid"},             {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
     {{"trYproton", "trPt", "pionpos"},            {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
     {{"trYpion", "trPt", "proton"},             {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
     {{"trYproton", "trPt", "deuteron"},             {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
@@ -281,19 +277,24 @@ void qa(string in="tree.root", const char* out="qa.root", string eventSelection=
     {{"trY", "trPt", "pionneg_dEdx_m2"},    {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
     {{"trY", "trPt", "pionpos_dEdx_m2"},    {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
     {{"trY", "trPt", "proton_dEdx_m2"},     {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
+    {{"trY", "trPt", "pionneg_effPid"},            {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
+    {{"trY", "trPt", "pionpos_effPid"},            {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
+    {{"trY", "trPt", "proton_effPid"},             {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
+    {{"trY", "trPt", "pionneg_effTrPid"},            {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
+    {{"trY", "trPt", "pionpos_effTrPid"},            {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
+    {{"trY", "trPt", "proton_effTrPid"},             {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
   };
 
   vector <pair <vector<string>, TH2DModel>> h2simOnly = {
     {{"simY", "simPt", "sim_pionneg_prim"},            {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
     {{"simY", "simPt", "sim_pionpos_prim"},            {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
     {{"simY", "simPt", "sim_proton_prim"},             {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
-  };
-
-  vector <pair <vector<string>, TH3DModel>> h3recOnly = {
-//    {{"trP", "trPt", "trdEdx", "trGoodPosWeightNdEdx"},      {"", "", 400, 0, 20, 200, 0, 5, nBinsdEdx, 0, dEdxMax}},
-//    {{"trP", "trPt", "trdEdx", "trGoodNegWeightNdEdx"},      {"", "", 400, 0, 20, 200, 0, 5, int(nBinsdEdx*2.5), 0, dEdxMax*2.5}},
-//    {{"trLog20p", "trPt", "trdEdx", "trGoodPosWeightNdEdx"},      {"", "", 400, 0, 10, 200, 0, 5, nBinsdEdx, 0, dEdxMax}},
-//    {{"trLog20p", "trPt", "trdEdx", "trGoodNegWeightNdEdx"},      {"", "", 400, 0, 10, 200, 0, 5, int(nBinsdEdx*2.5), 0, dEdxMax*2.5}},
+    {{"simPhi", "simY", "sim_pionneg_prim"},            {"", "", nBinsPhi, -3.15, 3.15, nBinsY, yMin, yMax}},
+    {{"simPhi", "simY", "sim_pionpos_prim"},            {"", "", nBinsPhi, -3.15, 3.15, nBinsY, yMin, yMax}},
+    {{"simPhi", "simY", "sim_proton_prim"},             {"", "", nBinsPhi, -3.15, 3.15, nBinsY, yMin, yMax}},
+    {{"simPhi", "simPt", "sim_pionneg_prim"},            {"", "", nBinsPhi, -3.15, 3.15, nBinsP, 0, ptMax}},
+    {{"simPhi", "simPt", "sim_pionpos_prim"},            {"", "", nBinsPhi, -3.15, 3.15, nBinsP, 0, ptMax}},
+    {{"simPhi", "simPt", "sim_proton_prim"},             {"", "", nBinsPhi, -3.15, 3.15, nBinsP, 0, ptMax}},
   };
 
   vector <pair <vector<string>, TProfile1DModel>> p1common = {
@@ -308,34 +309,62 @@ void qa(string in="tree.root", const char* out="qa.root", string eventSelection=
   };
 
   vector <pair <vector<string>, TProfile2DModel>> p2common = {
-    {{"psdModX", "psdModY", "psdModE", ""}, {"", "", 30, -60, 60, 30, -60, 60}},
+    {{"psdModX", "psdModY", "psdModE", ""}, {"", "", 100, -150, 150, 100, -150, 150}},
+    {{"psdModX", "psdModY", "psdModE", "psdModSub0"}, {"", "", 100, -150, 150, 100, -150, 150}},
+    {{"psdModX", "psdModY", "psdModE", "psdModSub1"}, {"", "", 100, -150, 150, 100, -150, 150}},
+    {{"psdModX", "psdModY", "psdModE", "psdModSub2"}, {"", "", 100, -150, 150, 100, -150, 150}},
+    {{"psdModX", "psdModY", "psdModE", "psdModSub3"}, {"", "", 100, -150, 150, 100, -150, 150}},
     {{"trY", "trPt", "pionneg_effTr", "pionneg"},            {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
     {{"trY", "trPt", "pionpos_effTr", "pionpos"},            {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
     {{"trY", "trPt", "proton_effTr", "proton"},             {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
+  };
+
+  vector <pair <vector<string>, TProfile2DModel>> p2recOnly = {
     {{"trY", "trPt", "pionneg_effPid", "pionneg"},            {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
     {{"trY", "trPt", "pionpos_effPid", "pionpos"},            {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
     {{"trY", "trPt", "proton_effPid", "proton"},             {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
     {{"trY", "trPt", "pionneg_effTrPid", "pionneg"},            {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
     {{"trY", "trPt", "pionpos_effTrPid", "pionpos"},            {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
     {{"trY", "trPt", "proton_effTrPid", "proton"},             {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
-  };
-
-  vector <pair <vector<string>, TProfile2DModel>> p2recOnly = {
 //    {{"trP", "trdEdx", "purityProton", "trGoodPos"},      {"", "", 1000, 0.05, 150, 100, 0, 5}},
 //    {{"trP", "trdEdx", "purityPion", "trGoodNeg"},        {"", "", 1000, 0.05, 150, 100, 0, 5}},
 //    {{"trP", "trdEdx", "purityPion", "trGoodPos"},        {"", "", 1000, 0.05, 150, 100, 0, 5}},
+  };
+
+  vector <pair <vector<string>, TProfile2DModel>> p2simOnly = {
+  };
+
+  vector <pair <vector<string>, TH3DModel>> h3common = {
+//    {{"trY", "trPt", "trPhi", "pionpos"},      {"", "", nBinsY/5, yMin, yMax, nBinsP/5, 0, ptMax, nBinsPhi/5, -3.15, 3.15}},
+//    {{"trY", "trPt", "trPhi", "pionneg"},      {"", "", nBinsY/5, yMin, yMax, nBinsP/5, 0, ptMax, nBinsPhi/5, -3.15, 3.15}},
+//    {{"trY", "trPt", "trPhi", "proton"},      {"", "", nBinsY/5, yMin, yMax, nBinsP/5, 0, ptMax, nBinsPhi/5, -3.15, 3.15}},
+  };
+
+  vector <pair <vector<string>, TH3DModel>> h3recOnly = {
+//    {{"trP", "trPt", "trdEdx", "trGoodPosWeightNdEdx"},      {"", "", 400, 0, 20, 200, 0, 5, nBinsdEdx, 0, dEdxMax}},
+//    {{"trP", "trPt", "trdEdx", "trGoodNegWeightNdEdx"},      {"", "", 400, 0, 20, 200, 0, 5, int(nBinsdEdx*2.5), 0, dEdxMax*2.5}},
+//    {{"trLog20p", "trPt", "trdEdx", "trGoodPosWeightNdEdx"},      {"", "", 400, 0, 10, 200, 0, 5, nBinsdEdx, 0, dEdxMax}},
+//    {{"trLog20p", "trPt", "trdEdx", "trGoodNegWeightNdEdx"},      {"", "", 400, 0, 10, 200, 0, 5, int(nBinsdEdx*2.5), 0, dEdxMax*2.5}},
+  };
+
+  vector <pair <vector<string>, TH3DModel>> h3simOnly = {
+//    {{"simY", "simPt", "simPhi", "sim_pionneg_prim"},            {"", "", nBinsY/5, yMin, yMax, nBinsP/5, 0, ptMax, nBinsPhi/5, -3.15, 3.15}},
+//    {{"simY", "simPt", "simPhi", "sim_pionpos_prim"},            {"", "", nBinsY/5, yMin, yMax, nBinsP/5, 0, ptMax, nBinsPhi/5, -3.15, 3.15}},
+//    {{"simY", "simPt", "simPhi", "sim_proton_prim"},             {"", "", nBinsY/5, yMin, yMax, nBinsP/5, 0, ptMax, nBinsPhi/5, -3.15, 3.15}},
   };
 
   saveHists(dd, h1common,  outFile);
   saveHists(dd, p1common,  outFile);
   saveHists(dd, h2common,  outFile);
   saveHists(dd, p2common,  outFile);
+  saveHists(dd, h3common,  outFile);
+
   if (!isSimulation)
   {
     saveHists(dd, h1recOnly,  outFile);
     saveHists(dd, p1recOnly,  outFile);
-    saveHists(dd, p2recOnly,  outFile);
     saveHists(dd, h2recOnly,  outFile);
+    saveHists(dd, p2recOnly,  outFile);
     saveHists(dd, h3recOnly,  outFile);
 //    #include "histsKIT.h"
 //    saveHists(dd, h1recOnlyKIT,  outFile);
@@ -344,25 +373,10 @@ void qa(string in="tree.root", const char* out="qa.root", string eventSelection=
   if (isSimulation)
   {
     saveHists(dd, h1simOnly,  outFile);
-    saveHists(dd, h2simOnly,  outFile);
     saveHists(dd, p1simOnly,  outFile);
     saveHists(dd, h2simOnly,  outFile);
-
-    vector<pair<int,string>> particles=
-    {
-      {-211, "pionneg"},
-      {211, "pionpos"},
-      {2212, "proton"},
-    };
-    for(auto &part:particles)
-    {
-      auto eff=(TH2*)outFile.Get(Form("h2_trY_trPt_%s", part.second.c_str()))->Clone(Form("h2_eff_trY_trPt_%i", part.first));
-      auto sim=(TH2*)outFile.Get(Form("h2_simY_simPt_sim_%s_prim", part.second.c_str()));
-      eff->Rebin2D(5,5);
-      sim->Rebin2D(5,5);
-      eff->Divide(sim);
-      eff->Write();
-    }
+    saveHists(dd, p2simOnly,  outFile);
+    saveHists(dd, h3simOnly,  outFile);
   }
 
 // #include "histsDT.h"

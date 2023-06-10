@@ -5,7 +5,6 @@
 #include "cut_dEdx_m2_pionneg.C"
 #include "cut_dEdx_m2_pionpos.C"
 #include "cut_dEdx_m2_proton.C"
-//#include "cut_dEdx_m2_deuteron.C"
 
 float nSigma(float x, const TF1 &f)
 {
@@ -121,14 +120,20 @@ filteredDF makeDataFrame (definedDF &d, TDirectory *dir=nullptr)
     else getter=pidGetterNeg;
     if(!getter) continue;
     hPidEffCorrs.emplace(pid, new TH1F(Form("pidEffCorr_%i", pid), Form("pidEffCorr_%i", pid), nBinsLog20p, log20pmin, log20pmax));
+    hPidEffCorrs.at(pid)->SetDirectory(0);
 
     for(int i=1;i<=nBinsLog20p;i++)
     {
       auto h=hPidEffCorrs.at(pid);
-      h->SetDirectory(0);
       auto eff=1./getter->GetEfficiency(h->GetXaxis()->GetBinCenter(i), pid, pidPurity);
-      if (isnan(eff) || isinf(eff)) eff=1.;
+      if (isnan(eff) || isinf(eff) || eff>10) eff=1.;
       h->SetBinContent(i, eff);
+    }
+
+    if(dir)
+    {
+      dir->cd();
+      hPidEffCorrs.at(pid)->Clone()->Write();
     }
   }
 
@@ -194,6 +199,7 @@ filteredDF makeDataFrame (definedDF &d, TDirectory *dir=nullptr)
 */
   TFile fCentr(Form("pbpb%i.centrality_Epsd.root", pBeam));
   auto centrGetter=(Centrality::Getter*)fCentr.Get("centr_getter_1D");
+  if(!centrGetter) centrGetter=(Centrality::Getter*)fCentr.Get("centr_getter_1d");
 
   auto getCentrality=[centrGetter](float E)
   {
@@ -244,11 +250,41 @@ filteredDF makeDataFrame (definedDF &d, TDirectory *dir=nullptr)
     return eff; 
   };
 
-  string pileUpCut;
+  string pileUpCut, goodWfa="Sum(abs(timesS1_1)<4000)==1";
+  string goodS1S2="fabs(adcS1-150)<35 && fabs(adcS2-195)<55 && adcS1*1.258+adcS2<390";
+  float vtxZnominal=-591.9, vtxZdelta=2;
+  string psdModSub1="psdModId<=16 || psdModId==45";
+  string psdModSub2="17<=psdModId && psdModId<=28";
+  string psdModSub3="29<=psdModId && psdModId<=44";
+  string psdModSub0="psdModId==6 || psdModId==7 || psdModId==10 || psdModId==11 || psdModId==45";
+  string psdModSub0wo45="psdModId==6 || psdModId==7 || psdModId==10 || psdModId==11";
+  string psdModSub1wo45="psdModId<=16";
   if(pBeam==13)
+  {
     pileUpCut="psdE<3800*(1-Mgood/230.)";
+  }
   else if(pBeam==30)
+  {
     pileUpCut="psdE<8000*(1-pow(Mgood/400., 2))";
+  }
+  else if(pBeam==41)
+  {
+    pileUpCut="true";
+    goodWfa="true";
+    goodS1S2="true";
+    vtxZnominal=-581.1;
+    psdModSub1="psdModId<=4";
+//    psdModSub2="5<=psdModId && psdModId<5+1*24";      //psd-like
+//    psdModSub3="5+1*24<=psdModId && psdModId<5+6*24"; //psd-like
+    psdModSub2="5<=psdModId && psdModId<5+3*24";      //psd-like 3x3 rings
+    psdModSub3="5+3*24<=psdModId && psdModId<5+6*24"; //psd-like 3x3 rings
+//    psdModSub2="5<=psdModId && psdModId<5+5*24";       //half-rings 
+//    psdModSub3="5+5*24<=psdModId && psdModId<5+10*24"; //half-rings
+    psdModSub0="5+6*24<=psdModId && psdModId<5+10*24"; 
+    psdModSub0wo45="psdModSub0";
+    psdModSub1wo45="psdModSub1";
+  }
+
   
 //  cout << "Number of events: " << *(d.Count()) << endl;
   auto dd=d
@@ -257,19 +293,18 @@ filteredDF makeDataFrame (definedDF &d, TDirectory *dir=nullptr)
     .Define("noDeltaEvents", "Sum(trCharge>0)>0")
     .Define("vtxChi2ndf", "vtxChi2/vtxNdf")
     .Define("psdModPhi", "atan2(psdModY,psdModX)")
-    .Define("psdModSub0wo45", "psdModId==6 || psdModId==7 || psdModId==10 || psdModId==11")
-    .Define("psdModSub1wo45", "psdModId<=16")
-    .Define("psdModSub0", "psdModId==6 || psdModId==7 || psdModId==10 || psdModId==11 || psdModId==45")
-    .Define("psdModSub1", "psdModId<=16 || psdModId==45")
-    .Define("psdModSub2", "17<=psdModId && psdModId<=28")
-    .Define("psdModSub3", "29<=psdModId && psdModId<=44")
+    .Define("psdModSub1", psdModSub1)
+    .Define("psdModSub2", psdModSub2)
+    .Define("psdModSub3", psdModSub3)
+    .Define("psdModSub0", psdModSub0)
+    .Define("psdModSub0wo45", psdModSub0wo45)
+    .Define("psdModSub1wo45", psdModSub1wo45)
     .Define("psdE", "Sum(psdModE)")
     .Define("psd0E", "Sum(psdModE*psdModSub0)")
     .Define("psd1E", "Sum(psdModE*psdModSub1)")
     .Define("psd2E", "Sum(psdModE*psdModSub2)")
     .Define("psd12E", "psd1E+psd2E")
     .Define("psd3E", "Sum(psdModE*psdModSub3)")
-    .Define("centrality", getCentrality, {"psdE"})
     .Define("trId", "RVec<int> id; for(int i=0;i<trPt.size();i++)id.push_back(i); return id;")
     .Define("trMom", "RVec<TVector3> mom; for(int i=0;i<nTracks;i++){TVector3 v;v.SetPtEtaPhi(trPt[i], trEta[i], trPhi[i]);mom.push_back(v);} return mom;")
     .Define("trPx", "RVec<float> px; for(auto &mom:trMom)px.push_back(mom.Px()); return px;")
@@ -286,11 +321,10 @@ filteredDF makeDataFrame (definedDF &d, TDirectory *dir=nullptr)
     .Define("trNclustTPC", "trNclustVTPC1+trNclustVTPC2+trNclustMTPC")
     .Define("trNclustPotTPC", "trNclustPotVTPC1+trNclustPotVTPC2+trNclustPotMTPC")
     .Define("trNclustToPot", "RVec<float> ratio(nTracks, -10); for(int i=0;i<nTracks;i++)if(trNclustPotTPC.at(i)>0)ratio.at(i)=(float)trNclustTPC.at(i)/trNclustPotTPC.at(i); return ratio;")
-//    .Define("trChi2ndf", "trChi2/trNdF.trNdf")
     .Define("trChi2ndf", "trChi2/trNdf")
     .Define("trNclustCut", "trNclustVTPC>=15 && trNclustTPC>=30")
     .Define("trNclustToPotCut", "trNclustToPot>0.55 && trNclustToPot<1.1")
-    .Define("trDcaCut", "abs(trDcaX-0.083)<2 && abs(trDcaY+0.006)<1")
+    .Define("trDcaCut", "abs(trDcaZ)<.5 && abs(trDcaX-0.02)<2 && abs(trDcaY-0.02)<1")
     .Define("trGoodNclust", "trNclustCut && trNclustToPotCut")
     .Define("trChi2ndfCut", "trChi2ndf<10")
     .Define("trChi2Cut", "trChi2<100000")
@@ -303,14 +337,26 @@ filteredDF makeDataFrame (definedDF &d, TDirectory *dir=nullptr)
     .Define("MgoodMid", "Sum(trGood*trMid)")
   ;
 
+  if(pBeam==13)
+    dd=dd.Define("centrality", getCentrality, {"psdE"});
+  else if(pBeam==30)
+    dd=dd.Define("centrality", getCentrality, {"psd1E"});
+  else if(pBeam==41)
+  {
+    dd=dd
+      .Define("centrality", "centrality49")
+      .Redefine("psdE", "vetoEcal")
+    ;
+  }
+
   if (!isSimulation)
   {
     dd=dd
       .Filter("trigT4||trigT2")
 //      .Filter("trigT4")
-      .Define("goodWfa","Sum(abs(timesS1_1)<4000)==1")
+      .Define("goodWfa", goodWfa)
       .Define("goodS1S2_16_011", "fabs(adcS1-145)<30 && fabs(adcS2-325)<175 && adcS1*1.258+adcS2<390")
-      .Define("goodS1S2", "fabs(adcS1-150)<35 && fabs(adcS2-195)<55 && adcS1*1.258+adcS2<390")
+      .Define("goodS1S2", goodS1S2)
       .Define("goodBpd", "fabs(bpd1x-0.1)<0.4 && fabs(bpd1y-0.2)<0.9 && fabs(bpd2x+0.2)<0.4 && fabs(bpd2y+0.1)<0.4 && fabs(bpd3x+0.5)<0.5 && fabs(bpd3y+0.25)<0.5")
       .Define("pileUpCut", pileUpCut)
       .Define("vtxXwrtBpd3", "vtxX-bpd3x")
@@ -423,28 +469,33 @@ filteredDF makeDataFrame (definedDF &d, TDirectory *dir=nullptr)
     .Define("proton", "trGood && trPid==2212")
     .Define("deuteron", "trGood && trPid==1000010020")
     .Define("trTrackingEffCorr", trackingEfficiencyCorrection, {"trY", "trPt", "trPid"})
-    .Define("trTrackingPidEffCorr", "trTrackingEffCorr*trPidEffCorr")
     .Define("pionneg_effTr", "pionneg*trTrackingEffCorr")
     .Define("pionpos_effTr", "pionpos*trTrackingEffCorr")
     .Define("proton_effTr", "proton*trTrackingEffCorr")
-    .Define("pionneg_effPid", "pionneg*trPidEffCorr")
-    .Define("pionpos_effPid", "pionpos*trPidEffCorr")
-    .Define("proton_effPid", "proton*trPidEffCorr")
-    .Define("pionneg_effTrPid", "pionneg*trTrackingPidEffCorr")
-    .Define("pionpos_effTrPid", "pionpos*trTrackingPidEffCorr")
-    .Define("proton_effTrPid", "proton*trTrackingPidEffCorr")
     .Define("Mproton", "Sum(proton)")
     .Define("Mpionneg", "Sum(pionneg)")
     .Define("MprotonMid", "Sum(proton*trMid)")
     .Define("MpionnegMid", "Sum(pionneg*trMid)")
   ;
 
+  if (!isSimulation)
+  {
+    dd=dd
+      .Define("trTrackingPidEffCorr", "trTrackingEffCorr*trPidEffCorr")
+      .Define("pionneg_effPid", "pionneg*trPidEffCorr")
+      .Define("pionpos_effPid", "pionpos*trPidEffCorr")
+      .Define("proton_effPid", "proton*trPidEffCorr")
+      .Define("pionneg_effTrPid", "pionneg*trTrackingPidEffCorr")
+      .Define("pionpos_effTrPid", "pionpos*trTrackingPidEffCorr")
+      .Define("proton_effTrPid", "proton*trTrackingPidEffCorr")
+    ;
+  }
 
   auto temp=dd;
   if (isSimulation) dd=dd.Filter("goodMcEventBeforeVtxCut");
   if (!isSimulation) temp=dd.Filter("goodEventBeforeVtxCut");
 
-  float vtxZnominal=-591.9, vtxZfitOffset=0.2;
+  float vtxZfitOffset=0.2;
   TF1 f_vtxXfit("f_vtxXfit","gaus", -2, 2);
   TF1 f_vtxYfit("f_vtxYfit","gaus", -2, 2);
   TF1 f_vtxZfit("f_vtxZfit","gaus",vtxZnominal-vtxZfitOffset,vtxZnominal+vtxZfitOffset);
@@ -468,7 +519,8 @@ filteredDF makeDataFrame (definedDF &d, TDirectory *dir=nullptr)
     .Define("nSigmaVtxY", [f_vtxYfit](float z){return nSigma(z, f_vtxYfit);}, {"vtxY"})
     .Define("nSigmaVtxXY", r, {"nSigmaVtxX", "nSigmaVtxY"})
     .Define("goodVtxXY", "nSigmaVtxXY<=3")
-    .Define("goodVtxPos", "fabs(vtxZ+591.9)<2 && goodVtxXY")
+    .Define("goodVtxZ", [vtxZnominal, vtxZdelta](float vtxZ){return fabs(vtxZ-vtxZnominal)<vtxZdelta;}, {"vtxZ"})
+    .Define("goodVtxPos", "goodVtxZ && goodVtxXY")
     .Define("goodVtx", "vtxFitPerfect && goodVtxPos")
   ;
 
