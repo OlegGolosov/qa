@@ -6,19 +6,19 @@ void plotEtaPt(TString fInName="qa13.root", float pBeam=13)
   vector<vector<float>> cbmPosition = 
   {
     {0.13, 0.85},
-    {0.58, 0.85},
+    {0.52, 0.85},
     {0.13, 0.15},
-    {0.58, 0.15},
+    {0.52, 0.15},
   }; 
   int kinCorner=1;
   float kinXshift = 0.07;
   float kinYshift = 0.;
   vector<vector<float>> kinPosition = 
   {
-    {0.13, 0.85},
-    {0.59, 0.85},
+    {0.07, 0.85},
+    {0.52, 0.85},
     {0.13, 0.15},
-    {0.59, 0.15},
+    {0.52, 0.15},
   }; 
   vector <TString> partNames={"pionneg","pionpos","proton"};
   vector <int> pids={-211,211,2212};
@@ -27,8 +27,10 @@ void plotEtaPt(TString fInName="qa13.root", float pBeam=13)
   if(pBeam==13)
     kinCuts={{0.8,1.2,0.2,2.2},{0.8,1.2,0.2,2.2},{0.8,1.2,0.4,2.2}};
   if(pBeam==30)
-    kinCuts={{0.6,1.0,0.2,2.2},{0.2,1.2,0.2,2.2},{0.2,0.8,0.8,3.0}};
-  vector <vector<float>> kinPlotRanges={{1.01,5.49,0.01,2.49},{1.01,5.49,0.01,2.49},{1.01,5.49,0.0,2.99}};
+    kinCuts={{0.4,1.0,0.4,1.0},{0.4,1.0,0.4,1.0},{0.2,0.8,0.8,3.0}};
+  if(pBeam==41)
+    kinCuts={{0.4,1.0,0.4,1.0},{0.4,1.0,0.4,1.0},{0.2,0.7,0.8,3.0}};
+  vector <vector<float>> kinPlotRanges={{1.01,5.49,0.01,2.49},{1.01,5.49,0.01,2.49},{1.01,5.49,0.0,2.49}};
   vector<float> psdRadii={6.7,20,40,60};
   vector<int> psdColors={kBlue,kRed,kGreen+2};
   vector<TString> psdTitles={"PSD1","PSD2","PSD3"};

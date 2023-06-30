@@ -274,10 +274,10 @@ filteredDF makeDataFrame (definedDF &d, TDirectory *dir=nullptr)
     goodS1S2="true";
     vtxZnominal=-581.1;
     psdModSub1="psdModId<=4";
-//    psdModSub2="5<=psdModId && psdModId<5+1*24";      //psd-like
-//    psdModSub3="5+1*24<=psdModId && psdModId<5+6*24"; //psd-like
-    psdModSub2="5<=psdModId && psdModId<5+3*24";      //psd-like 3x3 rings
-    psdModSub3="5+3*24<=psdModId && psdModId<5+6*24"; //psd-like 3x3 rings
+    psdModSub2="5<=psdModId && psdModId<5+1*24";      //psd-like
+    psdModSub3="5+1*24<=psdModId && psdModId<5+6*24"; //psd-like
+//    psdModSub2="5<=psdModId && psdModId<5+3*24";      //psd-like 3x3 rings
+//    psdModSub3="5+3*24<=psdModId && psdModId<5+6*24"; //psd-like 3x3 rings
 //    psdModSub2="5<=psdModId && psdModId<5+5*24";       //half-rings 
 //    psdModSub3="5+5*24<=psdModId && psdModId<5+10*24"; //half-rings
     psdModSub0="5+6*24<=psdModId && psdModId<5+10*24"; 
