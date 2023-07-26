@@ -83,12 +83,13 @@ filteredDF makeDataFrame (definedDF &d, TDirectory *dir=nullptr)
 {
   int pBeam=round(*d.Range(0,100).Mean("beamPz"));
   isSimulation=*d.Range(0,100).Mean("isSimulation");
-  float mp=0.938;
-  float eBeam=sqrt(pBeam*pBeam+mp*mp);
-  float yBeam=0.25*log((eBeam+pBeam)/(eBeam-pBeam));
+  auto mp=0.938, mNucl=0.931;
+  auto eBeam=sqrt(pBeam*pBeam+mp*mp);
+  auto yBeam=0.25*log((eBeam+pBeam)/(eBeam-pBeam));
+  auto sqrt2MoverT=sqrt(2*mNucl/eBeam);
   printf("pBeam = %i \t yBeam = %f \n", pBeam, yBeam);
 
-  auto rapidityCMS = [yBeam] (RVec<TLorentzVector> mom4){RVec<float> y; for(auto &mom:mom4)y.push_back(mom.Rapidity()-yBeam); return y;};
+  auto rapidityCMS = [yBeam] (RVec<TLorentzVector> mom4){RVec<float> y; for(auto &mom:mom4) y.push_back(mom.Rapidity()-yBeam); return y;};
 
   auto fPid=new TFile(Form("pbpb%i.pid.root", pBeam));
   auto pidGetterNeg=(Pid::Getter*)fPid->Get("pidGetterNeg");
@@ -458,8 +459,10 @@ filteredDF makeDataFrame (definedDF &d, TDirectory *dir=nullptr)
     .Define("trM", getMass, {"trPid"})
     .Define("trMom4", "RVec<TLorentzVector> mom4; for(int i=0;i<nTracks;i++){TLorentzVector v;v.SetPtEtaPhiM(trPt[i], trEta[i], trPhi[i], trM[i]);mom4.push_back(v);} return mom4;")
     .Define("trY", rapidityCMS, {"trMom4"})
-    .Define("trYproton", [yBeam](RVec<TLorentzVector> mom4){RVec<float> y; for(auto &mom:mom4){mom.SetPtEtaPhiM(mom.Pt(), mom.Eta(), mom.Phi(), TDatabasePDG::Instance()->GetParticle(2212)->Mass()); y.push_back(mom.Rapidity()-yBeam);} return y;}, {"trMom4"})
-    .Define("trYpion", [yBeam](RVec<TLorentzVector> mom4){RVec<float> y; for(auto &mom:mom4){mom.SetPtEtaPhiM(mom.Pt(), mom.Eta(), mom.Phi(), TDatabasePDG::Instance()->GetParticle(211)->Mass()); y.push_back(mom.Rapidity()-yBeam);} return y;}, {"trMom4"})
+    .Define("trY0", Form("trY/%f", yBeam))
+    .Define("trUt0", Form("trPt/trM*%f", sqrt2MoverT))
+//    .Define("trYproton", [yBeam](RVec<TLorentzVector> mom4){RVec<float> y; for(auto &mom:mom4){mom.SetPtEtaPhiM(mom.Pt(), mom.Eta(), mom.Phi(), TDatabasePDG::Instance()->GetParticle(2212)->Mass()); y.push_back(mom.Rapidity()-yBeam);} return y;}, {"trMom4"})
+//    .Define("trYpion", [yBeam](RVec<TLorentzVector> mom4){RVec<float> y; for(auto &mom:mom4){mom.SetPtEtaPhiM(mom.Pt(), mom.Eta(), mom.Phi(), TDatabasePDG::Instance()->GetParticle(211)->Mass()); y.push_back(mom.Rapidity()-yBeam);} return y;}, {"trMom4"})
     .Define("pionneg", "trGood && trPid==-211")
     .Define("kaonneg", "trGood && trPid==-321")
     .Define("eneg", "trGood && trPid==-11")

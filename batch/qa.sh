@@ -1,19 +1,18 @@
 #!/bin/bash
 
 system=pbpb
-pbeam=30
-production=16_045
+pbeam=13
+production=16_043
 export eventSelection=goodEvent
-postfix=_t2
+postfix=_t2t4
 dataDir=/mnt/pool/nica/7/ovgol/na61_data/${system}/${pbeam}agev/${production}
 export qaDir=/mnt/pool/nica/7/ovgol/na61_qa/${system}/${pbeam}agev/${production}/${eventSelection}/${postfix}
 logDir=/mnt/pool/nica/7/ovgol/log
-#dataPattern=*part_*.list
-#dataPattern=all.list
+#dataPattern=*.list
 dataPattern=*.tree.root
 
 export rootConfig=/mnt/pool/nica/7/parfenovpeter/Soft/root-6-26/install/bin/thisroot.sh
-qaSrc=/mnt/pool/nica/5/ovgol/soft/qa
+qaSrc=/mnt/pool/nica/7/ovgol/soft/qa
 executable=./runQa.sh
 
 mkdir -pv $logDir
