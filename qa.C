@@ -3,8 +3,9 @@
 
 //void qa(string in="tree13.root", const char* out="qa13.root", string eventSelection="goodEvent") {
 //void qa(string in="tree30.root", const char* out="qa30.root", string eventSelection="goodEvent") {
-void qa(string in="tree41.root", const char* out="qa41.root", string eventSelection="goodEvent") {
-//void qa(string in="tree_mc.root", const char* out="qa_mc.root", string eventSelection="goodMcEvent") {
+//void qa(string in="tree41.root", const char* out="qa41.root", string eventSelection="goodEvent") {
+void qa(string in="tree13mc.root", const char* out="qa13mc.root", string eventSelection="goodMcEvent") {
+//void qa(string in="tree30mc.root", const char* out="qa30mc.root", string eventSelection="goodMcEvent") {
   auto c=makeChain(in, "t"); 
   RDataFrame d(*c);
   TFile outFile(out, "recreate");
@@ -23,9 +24,9 @@ void qa(string in="tree41.root", const char* out="qa41.root", string eventSelect
     {{"Mgood", ""},                 {"", "", Mmax, 0, double(Mmax)}},
     {{"Mproton", ""},               {"", "", Mmax, 0, double(Mmax)}},
     {{"Mpionneg", ""},              {"", "", Mmax, 0, double(Mmax)}},
+    {{"Mpion", ""},                 {"", "", Mmax, 0, double(Mmax)}},
     {{"MgoodMid", ""},              {"", "", Mmax, 0, double(Mmax)}},
     {{"MprotonMid", ""},            {"", "", Mmax, 0, double(Mmax)}},
-    {{"MpionnegMid", ""},           {"", "", Mmax, 0, double(Mmax)}},
     {{"psdE", ""},                  {"", "", int(psdEmax/10), 0, psdEmax}},
     {{"psd0E", ""},                 {"", "", int(psdEmax/10), 0, psdEmax}},
     {{"psd1E", ""},                 {"", "", int(psdEmax/10), 0, psdEmax}},
@@ -123,6 +124,7 @@ void qa(string in="tree41.root", const char* out="qa41.root", string eventSelect
   
   vector <pair <vector<string>, TH1DModel>> h1simOnly = {
     {{"goodMcEventBeforeVtxCut", ""}, {"", "", 2, 0, 2}},
+    {{"b", ""}, {"", "", 200, 0, 20}},
     {{"trPrimary", ""}, {"", "", 2, 0, 2}},
     {{"trPrimary", "trDcaCut"}, {"", "", 2, 0, 2}},
     {{"trPrimary", "trGood"}, {"", "", 2, 0, 2}},
@@ -164,6 +166,20 @@ void qa(string in="tree41.root", const char* out="qa41.root", string eventSelect
     {{"Mpionneg", "psd12E", ""},            {"", "", Mmax, 0, double(Mmax), int(psdEmax/10), 0, psdEmax}},
     {{"Mpionneg", "psd3E", ""},             {"", "", Mmax, 0, double(Mmax), int(psdEmax/10), 0, psdEmax}},
     {{"Mpionneg", "centrality", ""},        {"", "", Mmax, 0, double(Mmax), 20, 0, 100}},
+    {{"Mpionpos", "psdE", ""},              {"", "", Mmax, 0, double(Mmax), int(psdEmax/10), 0, psdEmax}},
+    {{"Mpionpos", "psd0E", ""},             {"", "", Mmax, 0, double(Mmax), int(psdEmax/10), 0, psdEmax}},
+    {{"Mpionpos", "psd1E", ""},             {"", "", Mmax, 0, double(Mmax), int(psdEmax/10), 0, psdEmax}},
+    {{"Mpionpos", "psd2E", ""},             {"", "", Mmax, 0, double(Mmax), int(psdEmax/10), 0, psdEmax}},
+    {{"Mpionpos", "psd12E", ""},            {"", "", Mmax, 0, double(Mmax), int(psdEmax/10), 0, psdEmax}},
+    {{"Mpionpos", "psd3E", ""},             {"", "", Mmax, 0, double(Mmax), int(psdEmax/10), 0, psdEmax}},
+    {{"Mpionpos", "centrality", ""},        {"", "", Mmax, 0, double(Mmax), 20, 0, 100}},
+    {{"Mpion", "psdE", ""},         	    {"", "", Mmax, 0, double(Mmax), int(psdEmax/10), 0, psdEmax}},
+    {{"Mpion", "psd0E", ""},        	    {"", "", Mmax, 0, double(Mmax), int(psdEmax/10), 0, psdEmax}},
+    {{"Mpion", "psd1E", ""},        	    {"", "", Mmax, 0, double(Mmax), int(psdEmax/10), 0, psdEmax}},
+    {{"Mpion", "psd2E", ""},        	    {"", "", Mmax, 0, double(Mmax), int(psdEmax/10), 0, psdEmax}},
+    {{"Mpion", "psd12E", ""},       	    {"", "", Mmax, 0, double(Mmax), int(psdEmax/10), 0, psdEmax}},
+    {{"Mpion", "psd3E", ""},        	    {"", "", Mmax, 0, double(Mmax), int(psdEmax/10), 0, psdEmax}},
+    {{"Mpion", "centrality", ""},   	    {"", "", Mmax, 0, double(Mmax), 20, 0, 100}},
     {{"MgoodMid", "psdE", ""},              {"", "", Mmax, 0, double(Mmax), int(psdEmax/10), 0, psdEmax}},
     {{"MgoodMid", "psd0E", ""},             {"", "", Mmax, 0, double(Mmax), int(psdEmax/10), 0, psdEmax}},
     {{"MgoodMid", "psd1E", ""},             {"", "", Mmax, 0, double(Mmax), int(psdEmax/10), 0, psdEmax}},
@@ -178,13 +194,6 @@ void qa(string in="tree41.root", const char* out="qa41.root", string eventSelect
     {{"MprotonMid", "psd12E", ""},          {"", "", Mmax, 0, double(Mmax), int(psdEmax/10), 0, psdEmax}},
     {{"MprotonMid", "psd3E", ""},           {"", "", Mmax, 0, double(Mmax), int(psdEmax/10), 0, psdEmax}},
     {{"MprotonMid", "centrality", ""},      {"", "", Mmax, 0, double(Mmax), 20, 0, 100}},
-    {{"MpionnegMid", "psdE", ""},           {"", "", Mmax, 0, double(Mmax), int(psdEmax/10), 0, psdEmax}},
-    {{"MpionnegMid", "psd0E", ""},          {"", "", Mmax, 0, double(Mmax), int(psdEmax/10), 0, psdEmax}},
-    {{"MpionnegMid", "psd1E", ""},          {"", "", Mmax, 0, double(Mmax), int(psdEmax/10), 0, psdEmax}},
-    {{"MpionnegMid", "psd2E", ""},          {"", "", Mmax, 0, double(Mmax), int(psdEmax/10), 0, psdEmax}},
-    {{"MpionnegMid", "psd12E", ""},         {"", "", Mmax, 0, double(Mmax), int(psdEmax/10), 0, psdEmax}},
-    {{"MpionnegMid", "psd3E", ""},          {"", "", Mmax, 0, double(Mmax), int(psdEmax/10), 0, psdEmax}},
-    {{"MpionnegMid", "centrality", ""},     {"", "", Mmax, 0, double(Mmax), 20, 0, 100}},
     {{"psd0E", "psd1E", ""},                {"", "", int(psdEmax/10), 0, psdEmax, int(psdEmax/10), 0, psdEmax}},
     {{"psd0E", "psd2E", ""},                {"", "", int(psdEmax/10), 0, psdEmax, int(psdEmax/10), 0, psdEmax}},
     {{"psd0E", "psd3E", ""},                {"", "", int(psdEmax/10), 0, psdEmax, int(psdEmax/10), 0, psdEmax}},
@@ -202,7 +211,7 @@ void qa(string in="tree41.root", const char* out="qa41.root", string eventSelect
     {{"trNclust", "trNclustPot", "trGood"}, {"", "", 250, 0, 250, 250, 0, 250}},
     {{"trEta", "trPt", ""},                 {"", "", nBinsEta, 0, etaMax, nBinsP, 0, ptMax}},
     {{"trEta", "trPt", "trGood"},           {"", "", nBinsEta, 0, etaMax, nBinsP, 0, ptMax}},
-    {{"trEta", "trPt", "trMid"},            {"", "", nBinsEta, 0, etaMax, nBinsP, 0, ptMax}},
+    {{"trEta", "trPt", "trGoodMid"},           {"", "", nBinsEta, 0, etaMax, nBinsP, 0, ptMax}},
     {{"trEta", "trPt", "eneg"},          {"", "", nBinsEta, 0, etaMax, nBinsP, 0, ptMax}},
     {{"trEta", "trPt", "pionneg"},          {"", "", nBinsEta, 0, etaMax, nBinsP, 0, ptMax}},
     {{"trEta", "trPt", "kaonneg"},          {"", "", nBinsEta, 0, etaMax, nBinsP, 0, ptMax}},
@@ -213,13 +222,13 @@ void qa(string in="tree41.root", const char* out="qa41.root", string eventSelect
     {{"trEta", "trPt", "deuteron"},           {"", "", nBinsEta, 0, etaMax, nBinsP, 0, ptMax}},
     {{"trPhi", "trPt", ""},                 {"", "", nBinsPhi, -3.15, 3.15, nBinsP, 0, ptMax}},
     {{"trPhi", "trPt", "trGood"},           {"", "", nBinsPhi, -3.15, 3.15, nBinsP, 0, ptMax}},
-    {{"trPhi", "trPt", "trMid"},            {"", "", nBinsPhi, -3.15, 3.15, nBinsP, 0, ptMax}},
+    {{"trPhi", "trPt", "trGoodMid"},           {"", "", nBinsPhi, -3.15, 3.15, nBinsP, 0, ptMax}},
     {{"trPhi", "trPt", "pionneg"},          {"", "", nBinsPhi, -3.15, 3.15, nBinsP, 0, ptMax}},
     {{"trPhi", "trPt", "pionpos"},          {"", "", nBinsPhi, -3.15, 3.15, nBinsP, 0, ptMax}},
     {{"trPhi", "trPt", "proton"},          {"", "", nBinsPhi, -3.15, 3.15, nBinsP, 0, ptMax}},
     {{"trPhi", "trEta", ""},                {"", "", nBinsPhi, -3.15, 3.15, nBinsEta, 0, etaMax}},
     {{"trPhi", "trEta", "trGood"},          {"", "", nBinsPhi, -3.15, 3.15, nBinsEta, 0, etaMax}},
-    {{"trPhi", "trEta", "trMid"},           {"", "", nBinsPhi, -3.15, 3.15, nBinsEta, 0, etaMax}},
+    {{"trPhi", "trEta", "trGoodMid"},           {"", "", nBinsPhi, -3.15, 3.15, nBinsEta, 0, etaMax}},
     {{"trPhi", "trEta", "pionneg"},         {"", "", nBinsPhi, -3.15, 3.15, nBinsEta, 0, etaMax}},
     {{"trPhi", "trEta", "proton"},          {"", "", nBinsPhi, -3.15, 3.15, nBinsEta, 0, etaMax}},
     {{"trY", "trPt", "pionneg"},            {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
@@ -293,6 +302,17 @@ void qa(string in="tree41.root", const char* out="qa41.root", string eventSelect
   };
 
   vector <pair <vector<string>, TH2DModel>> h2simOnly = {
+    {{"Mgood", "b", ""},            {"", "", Mmax, 0, double(Mmax), 200, 0, 20}},
+    {{"Mproton", "b", ""},            {"", "", Mmax, 0, double(Mmax), 200, 0, 20}},
+    {{"Mpionneg", "b", ""},            {"", "", Mmax, 0, double(Mmax), 200, 0, 20}},
+    {{"Mpion", "b", ""},            {"", "", Mmax, 0, double(Mmax), 200, 0, 20}},
+    {{"MgoodMid", "b", ""},            {"", "", Mmax, 0, double(Mmax), 200, 0, 20}},
+    {{"MprotonMid", "b", ""},            {"", "", Mmax, 0, double(Mmax), 200, 0, 20}},
+    {{"psdE", "b", ""},             {"", "", int(psdEmax/10), 0, psdEmax, 200, 0, 20}},
+    {{"psd0E", "b", ""},             {"", "", int(psdEmax/10), 0, psdEmax, 200, 0, 20}},
+    {{"psd1E", "b", ""},             {"", "", int(psdEmax/10), 0, psdEmax, 200, 0, 20}},
+    {{"psd2E", "b", ""},             {"", "", int(psdEmax/10), 0, psdEmax, 200, 0, 20}},
+    {{"psd12E", "b", ""},             {"", "", int(psdEmax/10), 0, psdEmax, 200, 0, 20}},
     {{"simY", "simPt", "sim_pionneg_prim"},            {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
     {{"simY", "simPt", "sim_pionpos_prim"},            {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
     {{"simY", "simPt", "sim_proton_prim"},             {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
