@@ -1,10 +1,10 @@
 #include "qaUtils.h"
 #include "makeDF.h"
 
-//void qa(string in="tree13.root", const char* out="qa13.root", string eventSelection="goodEvent") {
+void qa(string in="tree13.root", const char* out="qa13.root", string eventSelection="goodEvent") {
 //void qa(string in="tree30.root", const char* out="qa30.root", string eventSelection="goodEvent") {
 //void qa(string in="tree41.root", const char* out="qa41.root", string eventSelection="goodEvent") {
-void qa(string in="tree13mc.root", const char* out="qa13mc.root", string eventSelection="goodMcEvent") {
+//void qa(string in="tree13mc.root", const char* out="qa13mc.root", string eventSelection="goodMcEvent") {
 //void qa(string in="tree30mc.root", const char* out="qa30mc.root", string eventSelection="goodMcEvent") {
   auto c=makeChain(in, "t"); 
   RDataFrame d(*c);
@@ -247,6 +247,18 @@ void qa(string in="tree13mc.root", const char* out="qa13mc.root", string eventSe
     {{"trPhi", "trY", "pionneg"},           {"", "", nBinsPhi, -3.15, 3.15, nBinsY, yMin, yMax}},
     {{"trPhi", "trY", "pionpos"},           {"", "", nBinsPhi, -3.15, 3.15, nBinsY, yMin, yMax}},
     {{"trPhi", "trY", "proton"},            {"", "", nBinsPhi, -3.15, 3.15, nBinsY, yMin, yMax}},
+    {{"trPsdY", "trPsdX", "trHitSub1"},     {"", "", 120, -60, 60, 120, -60, 60}},
+    {{"trPsdY", "trPsdX", "trHitSub2"},     {"", "", 120, -60, 60, 120, -60, 60}},
+    {{"trPsdY", "trPsdX", "trHitSub3"},     {"", "", 120, -60, 60, 120, -60, 60}},
+    {{"trY", "trPt", "protonHitSub1"},     {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
+    {{"trY", "trPt", "protonHitSub2"},     {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
+    {{"trY", "trPt", "protonHitSub3"},     {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
+    {{"trY", "trPt", "pionnegHitSub1"},     {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
+    {{"trY", "trPt", "pionnegHitSub2"},     {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
+    {{"trY", "trPt", "pionnegHitSub3"},     {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
+    {{"trY", "trPt", "pionposHitSub1"},     {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
+    {{"trY", "trPt", "pionposHitSub2"},     {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
+    {{"trY", "trPt", "pionposHitSub3"},     {"", "", nBinsY, yMin, yMax, nBinsP, 0, ptMax}},
   };
 
   vector <pair <vector<string>, TH2DModel>> h2recOnly = {

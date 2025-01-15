@@ -268,7 +268,7 @@ filteredDF makeDataFrame (definedDF &d, TDirectory *dir=nullptr)
   {
     pileUpCut="psdE<8000*(1-pow(Mgood/400., 2))";
   }
-  else if(pBeam==41)
+  else if(pBeam==40)
   {
     pileUpCut="true";
     goodWfa="true";
@@ -289,7 +289,7 @@ filteredDF makeDataFrame (definedDF &d, TDirectory *dir=nullptr)
   
 //  cout << "Number of events: " << *(d.Count()) << endl;
   auto dd=d
-    //.Range(0,1000)
+    .Range(0,1000)
     .Filter("eventId>0")
     .Define("noDeltaEvents", "Sum(trCharge>0)>0")
     .Define("vtxChi2ndf", "vtxChi2/vtxNdf")
@@ -331,6 +331,9 @@ filteredDF makeDataFrame (definedDF &d, TDirectory *dir=nullptr)
     .Define("trChi2Cut", "trChi2<100000")
     .Define("trMid", "trPt>0.02 && trEta<3.5")
     .Define("trGood", "trGoodNclust && trDcaCut && trChi2Cut")
+    .Define("trHitSub1", "RVec<bool> hit; for(auto &m:trPsdMod) if(m>0 && psdModSub1.at(m-1)==true) hit.push_back(true); else hit.push_back(false); return hit;")
+    .Define("trHitSub2", "RVec<bool> hit; for(auto &m:trPsdMod) if(m>0 && psdModSub2.at(m-1)==true) hit.push_back(true); else hit.push_back(false); return hit;")
+    .Define("trHitSub3", "RVec<bool> hit; for(auto &m:trPsdMod) if(m>0 && psdModSub3.at(m-1)==true) hit.push_back(true); else hit.push_back(false); return hit;")
     .Define("trGoodMid", "trGood && trMid")
     .Define("vtxPurity", getVtxPurity, {"vtxZ", "vtxNtrFit"})
     .Define("trGoodPos", "trGood && trCharge>0")
@@ -343,7 +346,7 @@ filteredDF makeDataFrame (definedDF &d, TDirectory *dir=nullptr)
     dd=dd.Define("centrality", getCentrality, {"psdE"});
   else if(pBeam==30)
     dd=dd.Define("centrality", getCentrality, {"psd1E"});
-  else if(pBeam==41)
+  else if(pBeam==40)
   {
     dd=dd
       .Define("centrality", "centrality49")
@@ -354,20 +357,16 @@ filteredDF makeDataFrame (definedDF &d, TDirectory *dir=nullptr)
   if (!isSimulation)
   {
     dd=dd
-//      .Filter("trigT4||trigT2")
-      .Filter("trigT4")
+      .Filter("trigT4||trigT2")
+//      .Filter("trigT4")
 //      .Filter("trigT1")
       .Define("goodWfa", goodWfa)
-      .Define("goodS1S2_16_011", "fabs(adcS1-145)<30 && fabs(adcS2-325)<175 && adcS1*1.258+adcS2<390")
       .Define("goodS1S2", goodS1S2)
       .Define("goodBpd", "fabs(bpd1x-0.1)<0.4 && fabs(bpd1y-0.2)<0.9 && fabs(bpd2x+0.2)<0.4 && fabs(bpd2y+0.1)<0.4 && fabs(bpd3x+0.5)<0.5 && fabs(bpd3y+0.25)<0.5")
       .Define("pileUpCut", pileUpCut)
       .Define("vtxXwrtBpd3", "vtxX-bpd3x")
       .Define("vtxYwrtBpd3", "vtxY-bpd3y")
       .Define("goodEventBeforeVtxCut", "goodS1S2 && goodWfa && pileUpCut && vtxFitPerfect && noDeltaEvents")
-      .Define("goodEventBeforeVtxCut_16_011", "goodS1S2_16_011 && goodWfa && vtxFitPerfect")
-      .Define("goodVtxPos_16_011", "fabs(vtxX+0.3045)<0.4355 && fabs(vtxY+0.321)<0.343 && fabs(vtxZ+592)<2")
-      .Define("goodEvent_16_011", "goodEventBeforeVtxCut_16_011 && goodVtxPos_16_011")
 //      .Define("trTofM2", "RVec<float> trM2(trId.size(), -999); for(int i=0;i<tofHitM2.size();i++) if(tofHitTrackId.at(i)>=0) trM2.at(tofHitTrackId.at(i))=tofHitM2.at(i); return trM2;")
 //      .Define("trPid", getPid_dEdx_cut, {"trQp", "trdEdx"})
       .Define("trPid", getPid_dEdx, {"trLog20p", "trdEdx", "trCharge"})
@@ -478,6 +477,15 @@ filteredDF makeDataFrame (definedDF &d, TDirectory *dir=nullptr)
     .Define("pionneg_effTr", "pionneg*trTrackingEffCorr")
     .Define("pionpos_effTr", "pionpos*trTrackingEffCorr")
     .Define("proton_effTr", "proton*trTrackingEffCorr")
+    .Define("protonHitSub1", "proton && trHitSub1") 
+    .Define("protonHitSub2", "proton && trHitSub2") 
+    .Define("protonHitSub3", "proton && trHitSub3") 
+    .Define("pionnegHitSub1", "pionneg && trHitSub1") 
+    .Define("pionnegHitSub2", "pionneg && trHitSub2") 
+    .Define("pionnegHitSub3", "pionneg && trHitSub3") 
+    .Define("pionposHitSub1", "pionpos && trHitSub1") 
+    .Define("pionposHitSub2", "pionpos && trHitSub2") 
+    .Define("pionposHitSub3", "pionpos && trHitSub3") 
     .Define("Mproton", "Sum(proton)")
     .Define("MprotonMid", "Sum(proton*trMid)")
     .Define("Mpionneg", "Sum(pionneg)")
